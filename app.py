@@ -4,7 +4,6 @@ import yaml
 import tempfile
 import streamlit as st
 from tempfile import NamedTemporaryFile
-from langchain_chroma import Chroma
 from langchain_community.vectorstores import SKLearnVectorStore
 from langchain_community.embeddings import GPT4AllEmbeddings
 from transformers import GPT2TokenizerFast
