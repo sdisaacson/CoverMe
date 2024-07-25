@@ -1,9 +1,11 @@
-import streamlit as st
 import getpass
 import os
 import yaml
+import tempfile
+import streamlit as st
 from tempfile import NamedTemporaryFile
 from langchain_chroma import Chroma
+from langchain_community.vectorstores import SKLearnVectorStore
 from langchain_community.embeddings import GPT4AllEmbeddings
 from transformers import GPT2TokenizerFast
 from langchain_text_splitters import CharacterTextSplitter
@@ -69,18 +71,21 @@ if uploaded_file is not None and job_description is not None:
     with st.spinner("Loading and Indexing the document"):
         
         tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
-        text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(tokenizer, chunk_size=700, chunk_overlap=0)
+        text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(tokenizer, chunk_size=200, chunk_overlap=0)
 
-        with NamedTemporaryFile(dir='./', suffix='.pdf', delete=False) as f:
-            f.write(uploaded_file.getbuffer())
-            loader = PDFPlumberLoader(f.name)
-            
+        tf = NamedTemporaryFile(dir='./', suffix='.pdf', delete=False)
+        tf.write(uploaded_file.getbuffer())
+        loader = PDFPlumberLoader(tf.name)
         data = loader.load_and_split(text_splitter=text_splitter)
         embeddings = load_embeddings()
-        vectorstore = Chroma.from_documents(documents=data, embedding=embeddings)
-        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 7})
-        compressor = FlashrankRerank(top_n=2, model="ms-marco-MiniLM-L-12-v2")
+        persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
+        vectorstore = SKLearnVectorStore.from_documents(documents=data, embedding=embeddings, persist_path=persist_path, serializer="parquet")
+        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 2})
+        compressor = FlashrankRerank(top_n=1, model="ms-marco-MiniLM-L-12-v2")
         compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever)
+        tf.close()
+        os.unlink(tf.name)
+        st.info("Index created .....")
     
     with st.spinner("Initiating the LLM"):
         
@@ -88,6 +93,7 @@ if uploaded_file is not None and job_description is not None:
         cohere_llm = ChatCohere(model="command-r")  
         cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
         cohere_rag_chain = create_retrieval_chain(compression_retriever, cohere_question_answer_chain)
+        st.info("LLM initiated ....")
 
 
 if get_button:
@@ -96,6 +102,8 @@ if get_button:
         cohere_results = cohere_rag_chain.invoke(input_json)['answer']
     st.success(cohere_results)
     st_copy_to_clipboard(cohere_results)
+    st.balloons()
 
 if reload_button:
     st.rerun()
+    
