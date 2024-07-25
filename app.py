@@ -25,7 +25,7 @@ st.divider()
 
 uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
 job_description = st.text_area("Job Description:", 
-                               max_chars=2000, 
+                               max_chars=5000, 
                                placeholder="Paste job description here", 
                                label_visibility="collapsed",
                                key="job-desc")
