@@ -77,7 +77,7 @@ if uploaded_file is not None:
         embeddings = load_embeddings()
         persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
         vectorstore = SKLearnVectorStore.from_documents(documents=data, embedding=embeddings, persist_path=persist_path, serializer="parquet")
-        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 2})
+        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': len(data)})
         compressor = FlashrankRerank(top_n=1, model="ms-marco-MiniLM-L-12-v2")
         compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever)
         tf.close()
