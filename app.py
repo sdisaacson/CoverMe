@@ -62,7 +62,7 @@ clear_button = st.button(label="Clear Input", on_click=clear_input)
 get_button = st.button("Get Cover Letter")
 reload_button = st.button(label="Reload", on_click=clear_input)
 
-if uploaded_file is not None and job_description is not None:
+if uploaded_file is not None:
     prompt_template = ChatPromptTemplate.from_template(generator_prompt)
 
     with st.spinner("Loading and Indexing the document"):
@@ -93,7 +93,7 @@ if uploaded_file is not None and job_description is not None:
         st.info("LLM initiated ....")
 
 
-if get_button:
+if get_button and job_description is not None:
     with st.status("Generating the cover letter"):
         input_json = {"input": job_description}
         cohere_results = cohere_rag_chain.invoke(input_json)['answer']
