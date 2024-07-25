@@ -14,7 +14,7 @@ from langchain_community.document_loaders import PDFPlumberLoader
 from langchain.retrievers.document_compressors import FlashrankRerank
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain_cohere import ChatCohere
-from langchain_community.embeddings.spacy_embeddings import SpacyEmbeddings
+from langchain_community.embeddings import TensorflowHubEmbeddings
 from st_copy_to_clipboard import st_copy_to_clipboard
 
 
@@ -48,8 +48,7 @@ Input 2 - Job description for the job to apply: {input}
 
 @st.cache_resource
 def load_embeddings():
-    embeddings = SpacyEmbeddings(model_name="en_core_web_sm")
-    return embeddings
+    return TensorflowHubEmbeddings()
 
 def clear_input():
     st.session_state["job-desc"] = ""
