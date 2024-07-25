@@ -10,4 +10,4 @@ pandas
 pyarrow
 transformers
 pdfplumber
-spacy
+tensorflow-hub
