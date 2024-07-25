@@ -5,7 +5,6 @@ import tempfile
 import streamlit as st
 from tempfile import NamedTemporaryFile
 from langchain_community.vectorstores import SKLearnVectorStore
-from langchain_community.embeddings import GPT4AllEmbeddings
 from transformers import GPT2TokenizerFast
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
@@ -15,6 +14,7 @@ from langchain_community.document_loaders import PDFPlumberLoader
 from langchain.retrievers.document_compressors import FlashrankRerank
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain_cohere import ChatCohere
+from langchain_community.embeddings.spacy_embeddings import SpacyEmbeddings
 from st_copy_to_clipboard import st_copy_to_clipboard
 
 
@@ -48,9 +48,7 @@ Input 2 - Job description for the job to apply: {input}
 
 @st.cache_resource
 def load_embeddings():
-    model_name = "all-MiniLM-L6-v2.gguf2.f16.gguf"
-    gpt4all_kwargs = {'allow_download': 'True'}
-    embeddings = GPT4AllEmbeddings(model_name=model_name, gpt4all_kwargs=gpt4all_kwargs)
+    embeddings = SpacyEmbeddings(model_name="en_core_web_sm")
     return embeddings
 
 def clear_input():
