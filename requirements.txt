@@ -12,3 +12,4 @@ transformers
 pdfplumber
 sentence_transformers
 langchain-huggingface
+flashrank
