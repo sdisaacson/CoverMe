@@ -1,1 +1,101 @@
 import streamlit as st
+import getpass
+import os
+import yaml
+from tempfile import NamedTemporaryFile
+from langchain_chroma import Chroma
+from langchain_community.embeddings import GPT4AllEmbeddings
+from transformers import GPT2TokenizerFast
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.document_loaders import PDFPlumberLoader
+from langchain.retrievers.document_compressors import FlashrankRerank
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain_cohere import ChatCohere
+from st_copy_to_clipboard import st_copy_to_clipboard
+
+
+st.title("CoverMeUp")
+st.markdown("**A cover letter generator based on the job description and resume using Gen AI.**")
+st.divider()
+
+
+uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
+job_description = st.text_area("Job Description:", 
+                               max_chars=2000, 
+                               placeholder="Paste job description here", 
+                               label_visibility="collapsed",
+                               key="job-desc")
+
+generator_prompt = """
+Create a cover letter in the prescribed format based on the given input and context. context here refers to
+the resume of the candidate while input refers to job description. 
+
+Prescribed cover letter format:
+Dear Hiring Team,
+Write cover letter content that sounds professional & written by human. cover letter should have 3 - 5 paragraphs.
+Sign off the cover letter as:
+Best Regards,
+<name in resume>
+
+Input 1 - Resume of applying candidate: {context}
+Input 2 - Job description for the job to apply: {input}
+"""
+
+
+@st.cache_resource
+def load_embeddings():
+    model_name = "all-MiniLM-L6-v2.gguf2.f16.gguf"
+    gpt4all_kwargs = {'allow_download': 'True'}
+    embeddings = GPT4AllEmbeddings(model_name=model_name, gpt4all_kwargs=gpt4all_kwargs)
+    return embeddings
+
+def clear_input():
+    st.session_state["job-desc"] = ""
+
+def clear_all():
+    st.session_state["cv-upload"] = ""
+    st.session_state["job-desc"] = ""
+    
+clear_button = st.button(label="Clear Input", on_click=clear_input)
+get_button = st.button("Get Cover Letter")
+reload_button = st.button(label="Reload", on_click=clear_input)
+
+if uploaded_file is not None and job_description is not None:
+    prompt_template = ChatPromptTemplate.from_template(generator_prompt)
+
+    with st.spinner("Loading and Indexing the document"):
+        
+        tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+        text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(tokenizer, chunk_size=700, chunk_overlap=0)
+
+        with NamedTemporaryFile(dir='./', suffix='.pdf', delete=False) as f:
+            f.write(uploaded_file.getbuffer())
+            loader = PDFPlumberLoader(f.name)
+            
+        data = loader.load_and_split(text_splitter=text_splitter)
+        embeddings = load_embeddings()
+        vectorstore = Chroma.from_documents(documents=data, embedding=embeddings)
+        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 7})
+        compressor = FlashrankRerank(top_n=2, model="ms-marco-MiniLM-L-12-v2")
+        compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever)
+    
+    with st.spinner("Initiating the LLM"):
+        
+        os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
+        cohere_llm = ChatCohere(model="command-r")  
+        cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
+        cohere_rag_chain = create_retrieval_chain(compression_retriever, cohere_question_answer_chain)
+
+
+if get_button:
+    with st.status("Generating the cover letter"):
+        input_json = {"input": job_description}
+        cohere_results = cohere_rag_chain.invoke(input_json)['answer']
+    st.success(cohere_results)
+    st_copy_to_clipboard(cohere_results)
+
+if reload_button:
+    st.rerun()

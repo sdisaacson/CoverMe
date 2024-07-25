@@ -2,3 +2,6 @@ langchain-community
 langchain-cohere
 langchain
 chroma
+st-copy-to-clipboard
+langchain-text-splitters
+langchain-chroma
