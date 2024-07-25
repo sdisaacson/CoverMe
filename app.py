@@ -99,7 +99,6 @@ if get_button:
         cohere_results = cohere_rag_chain.invoke(input_json)['answer']
     st.success(cohere_results)
     st_copy_to_clipboard(cohere_results)
-    st.balloons()
 
 if reload_button:
     st.rerun()
