@@ -10,5 +10,4 @@ pandas
 pyarrow
 transformers
 pdfplumber
-tensorflow-hub
-tensorflow
+sentence_transformers
