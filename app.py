@@ -46,9 +46,9 @@ Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below 
 Don’t use terms like “as mentioned in the job description”
 </Body>
 <Signature>
-Sign off the cover letter as:
-Best Regards, \n\n 
-Name in resume (input 2)
+Sign off the cover letter with 2 lines as:
+Line 1: Best Regards,  
+Line 2: Name in resume (input 2)
 </Signature>
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
