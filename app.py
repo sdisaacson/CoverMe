@@ -19,8 +19,7 @@ from st_copy_to_clipboard import st_copy_to_clipboard
 
 
 st.title("Cover Me")
-st.markdown("**Do you want to stand out while applying for jobs? We got you covered! 
-Cover Me generates contextual cover letter based on your resume & the job description in seconds. You can now ditch your generic messages & send custom cover letters to boost your chances of converting.**")
+st.markdown("**Do you want to stand out while applying for jobs? We got you covered! Cover Me generates contextual cover letter based on your resume & the job description in seconds. You can now ditch your generic messages & send custom cover letters to boost your chances of converting.**")
 st.divider()
 
 
