@@ -32,14 +32,18 @@ job_description = st.text_area("Job Description:",
                                key="job-desc")
 
 generator_prompt = """
-Create a cover letter in the prescribed format based on the given input and context. context here refers to
-the resume of the candidate while input refers to job description. 
-
+Create a cover letter in the prescribed format based on the given 2 inputs as context.
 Prescribed cover letter format:
 Dear Hiring Team,
-Write cover letter content that sounds professional & written by human. cover letter should have 3 - 5 paragraphs.
+<Body>
+Write cover letter body that sounds professional & written by human. cover letter should have 4 paragraphs (Around 300 max). The body should not sound blatantly related job description. Make subtle by following the below steps
+Step 1: Extract important key words from input 2 given below
+Step 2: Extract about the company from input 2 given below + internet (vision, key products etc.)
+Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write resume
+Don’t use terms like “as mentioned in the job description”
+</Body>
 Sign off the cover letter as:
-Best Regards,
+Best Regards, <line break>
 <name in resume>
 
 Input 1 - Resume of applying candidate: {context}
