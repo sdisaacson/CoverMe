@@ -46,8 +46,7 @@ Instruction to write Body of letter:
 - Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
 - Don’t use terms like “as mentioned in the job description”
 
-Best Regards, 
-<name in resume on the next line>
+Best Regards
 
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
