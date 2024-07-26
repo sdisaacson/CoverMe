@@ -52,7 +52,7 @@ Best Regards,
 
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
-Note: The output should only contain the cover letter as given in the format structure
+Note: The output should only contain the cover letter as given in the format structure. Dont write "best regards" & "name on resume" in same line. Move the name to a new line
 """
 
 
