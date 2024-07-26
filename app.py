@@ -46,9 +46,12 @@ Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below 
 Don’t use terms like “as mentioned in the job description”
 </Body>
 <Signature>
-Sign off the cover letter with 2 lines given below - below <Line 1> & <Line 2> tags are strict command. They indicate content on 2 new line. Dont add them in the same line:
-<Line 1>Best Regards,</Line 1>  
-<Line 2> Name in resume (input 2)</Line 2>
+Sign off the cover letter with
+Warm Regards,
+Name in resume
+
+Incorrect signature: "Warm Regards, Roshan Pasupathi"
+Correct signature: "Warm Regards, \n Roshan Pasupathi" where \n means line break that is used in python print outputs.
 </Signature>
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
