@@ -48,6 +48,9 @@ Don’t use terms like “as mentioned in the job description”
 
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
+Input 3 - Signature:
+Best Regards,
+Name in Resume
 Note: The output should only contain the cover letter as given in the format structure
 """
 
