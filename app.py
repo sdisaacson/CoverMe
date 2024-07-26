@@ -47,11 +47,11 @@ Don’t use terms like “as mentioned in the job description”
 </Body>
 <Signature>
 Sign off the cover letter with
-Warm Regards,
+Best Regards,
 Name in resume
 
-Incorrect signature: "Warm Regards, Roshan Pasupathi"
-Correct signature: "Warm Regards, \n Roshan Pasupathi" where \n means line break that is used in python print outputs.
+Incorrect signature: "Best Regards, Roshan Pasupathi"
+Correct signature: "Best Regards, [New_Line] Roshan Pasupathi" where [New_Line] indicates to break to new line in output structure.
 </Signature>
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
