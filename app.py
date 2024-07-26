@@ -34,10 +34,10 @@ job_description = st.text_area("Job Description:",
 generator_prompt = """
 Create a cover letter in the Format structure given below. Use the given 2 inputs below as variable to add context to the format.
 Format structure of cover letter:
-Note - format is given in </> tags
-<Intro>
+Note - Different section of the letter is given in </> tags for your internal understanding. Follow the instruction within the tags for each sections. Don’t generate the tags in the output.
+<Salutation>
 Dear Hiring Team,
-</Intro>
+</Salutation>
 <Body>
 Write cover letter body that sounds professional & written by human. cover letter should strictly have 4 paragraphs (Around 250 words max). The body should not sound blatantly related job description. Make it subtle by following the below steps
 Step 1: Extract important key words from input 2 given below
@@ -47,8 +47,8 @@ Don’t use terms like “as mentioned in the job description”
 </Body>
 <Signature>
 Sign off the cover letter as:
-Best Regards, <line break>
-<name in resume>
+Best Regards, 
+<name in resume in next line>
 </Signature>
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
