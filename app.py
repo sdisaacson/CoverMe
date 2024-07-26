@@ -47,7 +47,8 @@ Instruction to write Body of letter:
 - Don’t use terms like “as mentioned in the job description”
 
 Best Regards, 
-<Line break + Name in resume>
+<Line break> 
+<Name in resume>
 
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
