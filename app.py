@@ -45,14 +45,7 @@ Step 2: Extract details about the company from input 2 given below + internet (v
 Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
 Don’t use terms like “as mentioned in the job description”
 </Body>
-<Signature>
-Sign off the cover letter with
-Best Regards,
-Name in resume
 
-Incorrect signature: "Best Regards, Roshan Pasupathi"
-Correct signature: "Best Regards, [New_Line] Roshan Pasupathi" where [New_Line] indicates to break to new line in output structure.
-</Signature>
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
 Note: The output should only contain the cover letter as given in the format structure
