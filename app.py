@@ -18,7 +18,7 @@ from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from st_copy_to_clipboard import st_copy_to_clipboard
 
 
-st.title("CoverMeUp")
+st.title("Cover Me")
 st.markdown("**A cover letter generator based on the job description and resume using Gen AI.**")
 st.divider()
 
