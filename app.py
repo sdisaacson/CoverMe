@@ -48,7 +48,6 @@ Don’t use terms like “as mentioned in the job description”
 <Signature>
 Sign off the cover letter as:
 Best Regards, 
-<name in resume>
 Write the name in next line after best regards
 </Signature>
 Input 1 - Resume of applying candidate: {context}
