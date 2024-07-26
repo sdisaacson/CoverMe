@@ -65,12 +65,12 @@ def clear_input():
     st.session_state["job-desc"] = ""
 
 def clear_all():
-    st.session_state["cv-upload"] = ""
+    uploaded_file = None
     st.session_state["job-desc"] = ""
     
 clear_button = st.button(label="Clear Input", on_click=clear_input)
 get_button = st.button("Get Cover Letter")
-reload_button = st.button(label="Reload", on_click=clear_input)
+reload_button = st.button(label="Reload", on_click=clear_all)
 
 if uploaded_file is not None:
     prompt_template = ChatPromptTemplate.from_template(generator_prompt)
