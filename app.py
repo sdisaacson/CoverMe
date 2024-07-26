@@ -37,17 +37,17 @@ Format structure of cover letter:
 
 Dear Hiring Team,
 
-Body of letter:
-- Write cover letter body that sounds professional & written by human
-- body of letter should strictly have only 4 paragraphs (Around 250 words max). 
-- The body should not sound blatantly related job description. Make it subtle by following the below steps
+Instruction to write Body of letter:
+- Write cover letter body that sounds professional, natural & written by human
+- body of letter should be less than 250 words. 
+- The body should not sound blatantly copy input 2. Make it subtle by following the below steps
 - Step 1: Extract important key words from input 2 given below
 - Step 2: Extract details about the company from input 2 given below + internet (vision, key products etc.)
 - Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
 - Don’t use terms like “as mentioned in the job description”
 
 Best Regards, 
-<Name in resume below best regards>
+<Name in resume in next line of output>
 
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
