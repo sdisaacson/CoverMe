@@ -52,6 +52,7 @@ Best Regards,
 Input 1 - Resume of applying candidate: {context}
 Input 2 - Job description for the job to apply: {input}
 Note: The output should only contain the cover letter as given in the format structure. 
+"""
 
 @st.cache_resource
 def load_embeddings():
