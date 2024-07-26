@@ -34,7 +34,7 @@ job_description = st.text_area("Job Description:",
 generator_prompt = """
 Create a cover letter in the Format structure given below. Use the given 2 inputs below as variable to add context to the format.
 Format structure of cover letter:
-Note - Different section of the letter is given in </> tags for your internal understanding. Follow the instruction within the tags for each sections. Don’t generate the tags in the output. Line after # is a strict command to be followed. 
+Note - Different section of the letter is given in </> tags for your internal understanding. Follow the instruction within the tags for each sections. Don’t generate the tags in the output.  
 <Salutation>
 Dear Hiring Team,
 </Salutation>
@@ -46,7 +46,7 @@ Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below 
 Don’t use terms like “as mentioned in the job description”
 </Body>
 <Signature>
-# Sign off the cover letter with 2 lines given below:
+Sign off the cover letter with 2 lines given below - below <Line 1> & <Line 2> tags are strict command. They indicate content on 2 new line. Dont add them in the same line:
 <Line 1>Best Regards,</Line 1>  
 <Line 2> Name in resume (input 2)</Line 2>
 </Signature>
