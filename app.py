@@ -65,18 +65,9 @@ def clear_input():
 def clear_all():
     uploaded_file = None
     st.session_state["job-desc"] = ""
-
-def get_cover_letter():
-    
-    with st.status("Generating the cover letter"):
-        input_json = {"input": job_description}
-        cohere_results = cohere_rag_chain.invoke(input_json)['answer']
-    st.success(cohere_results)
-    st_copy_to_clipboard(cohere_results)
-  
     
 clear_button = st.button(label="Clear Input", on_click=clear_input)
-get_button = st.button("Get Cover Letter", on_click=get_cover_letter)
+get_button = st.button("Get Cover Letter")
 reload_button = st.button(label="Reload", on_click=clear_all)
 
 if uploaded_file is not None:
@@ -110,12 +101,12 @@ if uploaded_file is not None:
         st.info("LLM initiated ....")
 
 
-# if get_button and job_description is not None:
-#     with st.status("Generating the cover letter"):
-#         input_json = {"input": job_description}
-#         cohere_results = cohere_rag_chain.invoke(input_json)['answer']
-#     st.success(cohere_results)
-#     st_copy_to_clipboard(cohere_results)
+if get_button and job_description is not None:
+    with st.status("Generating the cover letter"):
+        input_json = {"input": job_description}
+        cohere_results = cohere_rag_chain.invoke(input_json)['answer']
+    st.success(cohere_results)
+    st_copy_to_clipboard(cohere_results)
 
 if reload_button:
     st.rerun()
