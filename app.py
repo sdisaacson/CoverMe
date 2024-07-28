@@ -66,7 +66,7 @@ def clear_all():
     uploaded_file = None
     st.session_state["job-desc"] = ""
 
-def get_cover_letter(job_description, cohere_rag_chain):
+def get_cover_letter():
     
     with st.status("Generating the cover letter"):
         input_json = {"input": job_description}
