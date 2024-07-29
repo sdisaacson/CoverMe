@@ -95,7 +95,7 @@ if uploaded_file is not None:
     with st.spinner("Initiating the LLM"):
         
         os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
-        cohere_llm = ChatCohere(model="command-r")  
+        cohere_llm = ChatCohere(model="command-r-plus")  
         cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
         cohere_rag_chain = create_retrieval_chain(compression_retriever, cohere_question_answer_chain)
         st.info("LLM initiated ....")
