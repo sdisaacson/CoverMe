@@ -17,15 +17,17 @@ from st_copy_to_clipboard import st_copy_to_clipboard
 
 st.title("Cover Me")
 st.markdown(
-    """<!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/ns.html?id=GTM-M6W59PJ9"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-**********');
-        </script>
-    """, unsafe_allow_html=True)
+    """
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7K2EYS8BD4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    gtag('config', 'G-7K2EYS8BD4');
+    </script>
+    """,
+    unsafe_allow_html=True)
 st.markdown("**Do you want to stand out while applying for jobs? We got you covered! Cover Me generates contextual cover letter based on your resume & the job description in seconds. You can now ditch your generic messages & send custom cover letters to boost your chances of converting.**")
 st.markdown("Note: We're in the early stages of development. Please bear with us and help us improve with your feedback. Share your suggestions and feature requests via [here](https://forms.gle/UPXJBZxdiZy81XVQ9)")
 st.divider()
