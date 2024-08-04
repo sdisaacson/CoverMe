@@ -15,11 +15,9 @@ from langchain_cohere import ChatCohere
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from st_copy_to_clipboard import st_copy_to_clipboard
 
-
 st.title("Cover Me")
 st.markdown(
-    """
-        <!-- Global site tag (gtag.js) - Google Analytics -->
+    """<!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/ns.html?id=GTM-M6W59PJ9"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
@@ -32,11 +30,10 @@ st.markdown("**Do you want to stand out while applying for jobs? We got you cove
 st.markdown("Note: We're in the early stages of development. Please bear with us and help us improve with your feedback. Share your suggestions and feature requests via [here](https://forms.gle/UPXJBZxdiZy81XVQ9)")
 st.divider()
 
-
 uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
-job_description = st.text_area("Job Description:", 
-                               max_chars=5000, 
-                               placeholder="Paste job description here", 
+job_description = st.text_area("Job Description:",
+                               max_chars=5000,
+                               placeholder="Paste job description here",
                                label_visibility="collapsed",
                                key="job-desc")
 
@@ -63,18 +60,22 @@ Note: The output should only contain the cover letter as given in the format str
 Note 2: The last line of the cover letter should contain only the candidate's name Example: "John Doe"
 """
 
+
 @st.cache_resource
 def load_embeddings():
     embeddings = HuggingFaceEmbeddings()
     return embeddings
 
+
 def clear_input():
     st.session_state["job-desc"] = ""
+
 
 def clear_all():
     uploaded_file = None
     st.session_state["job-desc"] = ""
-    
+
+
 clear_button = st.button(label="Clear Input", on_click=clear_input)
 get_button = st.button("Get Cover Letter")
 reload_button = st.button(label="Reload", on_click=clear_all)
@@ -83,7 +84,6 @@ if uploaded_file is not None:
     prompt_template = ChatPromptTemplate.from_template(generator_prompt)
 
     with st.spinner("Loading and Indexing the document"):
-        
         tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
         text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(tokenizer, chunk_size=200, chunk_overlap=0)
 
@@ -93,22 +93,21 @@ if uploaded_file is not None:
         data = loader.load_and_split(text_splitter=text_splitter)
         embeddings = load_embeddings()
         persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
-        vectorstore = SKLearnVectorStore.from_documents(documents=data, embedding=embeddings, persist_path=persist_path, serializer="parquet")
+        vectorstore = SKLearnVectorStore.from_documents(documents=data, embedding=embeddings, persist_path=persist_path,
+                                                        serializer="parquet")
         retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': len(data)})
         compressor = FlashrankRerank(top_n=1, model="ms-marco-MiniLM-L-12-v2")
         compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever)
         tf.close()
         os.unlink(tf.name)
         st.info("Index created .....")
-    
+
     with st.spinner("Initiating the LLM"):
-        
         os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
-        cohere_llm = ChatCohere(model="command-r-plus")  
+        cohere_llm = ChatCohere(model="command-r-plus")
         cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
         cohere_rag_chain = create_retrieval_chain(compression_retriever, cohere_question_answer_chain)
         st.info("LLM initiated ....")
-
 
 if get_button and job_description is not None:
     with st.status("Generating the cover letter"):
@@ -119,4 +118,3 @@ if get_button and job_description is not None:
 
 if reload_button:
     st.rerun()
-    
