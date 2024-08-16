@@ -1,114 +1,90 @@
-import getpass
 import os
-import yaml
 import tempfile
-import streamlit as st
 from tempfile import NamedTemporaryFile
-from langchain_community.vectorstores import SKLearnVectorStore
-from transformers import GPT2TokenizerFast
-from langchain_text_splitters import CharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate
+
+import streamlit as st
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_community.document_loaders import PDFPlumberLoader
-from langchain.retrievers.document_compressors import FlashrankRerank
-from langchain.retrievers import ContextualCompressionRetriever
-from langchain_cohere import ChatCohere
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import SKLearnVectorStore
+from langchain_text_splitters import CharacterTextSplitter
 from st_copy_to_clipboard import st_copy_to_clipboard
 
-st.title("Cover Me")
-st.markdown(
-    "**Do you want to stand out while applying for jobs? We got you covered! Cover Me generates contextual cover letter based on your resume & the job description in seconds. You can now ditch your generic messages & send custom cover letters to boost your chances of converting.**")
-st.markdown(
-    "Note: We're in the early stages of development. Please bear with us and help us improve with your feedback. Share your suggestions and feature requests via [here](https://forms.gle/UPXJBZxdiZy81XVQ9)")
-st.divider()
+from components.document import PDFDocumentLoader
+from components.embedding import HuggingFaceEmbedding
+from components.llm import CohereLLMChain
+from components.prompt import GeneratorPrompt, LinkedInMessagePrompt
 
-uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
-job_description = st.text_area("Job Description:",
-                               max_chars=5000,
-                               placeholder="Paste job description here",
-                               label_visibility="collapsed",
-                               key="job-desc")
-
-generator_prompt = """
-Create a cover letter in the Format structure given below. Use the given 2 inputs below as variable to add context to the format.
-Format structure of cover letter:
-
-Dear Hiring Team,
-
-Instruction to write Body of letter:
-- Write cover letter body that sounds professional, natural & written by human
-- body of letter in the range of 150 to 250 words. 
-- Body should be written based on steps 1 to 3 mentioned next:
-- Step 1: Extract important key words from input 2 given below
-- Step 2: Extract details about the company from input 2 given below + internet (vision, key products etc.)
-- Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
-- Don’t use terms like “as mentioned in the job description”
-
-Best Regards
-
-Input 1 - Resume of applying candidate: {context}
-Input 2 - Job description for the job to apply: {input}
-Note: The output should only contain the cover letter as given in the format structure. 
-Note 2: The last line of the cover letter should contain only the candidate's name Example: "John Doe"
-"""
+option_generators = {
+    "LinkedIn Message": LinkedInMessagePrompt(),
+    "Cover Letter": GeneratorPrompt()
+}
 
 
-@st.cache_resource
-def load_embeddings():
-    embeddings = HuggingFaceEmbeddings()
-    return embeddings
+def cover_me_app():
+    st.title("Cover Me")
+    st.markdown(
+        "**Do you want to stand out while applying for jobs? We got you covered! Cover Me generates contextual cover "
+        "letters based on your resume and the job description in seconds.**")
+    st.markdown(
+        "Note: We're in the early stages of development. Please bear with us and help us improve with your feedback. "
+        "Share your suggestions and feature requests [here](https://forms.gle/UPXJBZxdiZy81XVQ9).")
+    st.divider()
+
+    uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
+    job_description = st.text_area("Job Description:",
+                                   max_chars=5000,
+                                   placeholder="Paste job description here",
+                                   label_visibility="collapsed",
+                                   key="job-desc")
+    generator_option = st.selectbox(
+        "Select the type of generation you would like to do:",
+        ("LinkedIn Message", "Cover Letter")
+    )
+    get_button = st.button("Get generated content")
+
+    if uploaded_file:
+        with st.spinner("Indexing the resume"):
+            retriever = generate_index(uploaded_file)
+            llm_chain = initiate_llm(retreiver=retriever,
+                                     option_key=generator_option)
+
+    if get_button:
+        cover_letter = llm_chain.invoke({"input": job_description})["answer"]
+        st.info("Cover letter generated successfully:")
+        st.success(cover_letter)
+        st_copy_to_clipboard(cover_letter)
 
 
-def clear_input():
-    st.session_state["job-desc"] = ""
+@st.cache_resource()
+def generate_index(uploaded_file):
+    tf = NamedTemporaryFile(dir='./', suffix='.pdf', delete=False)
+    tf.write(uploaded_file.getbuffer())
+    resume_loader = PDFDocumentLoader(tf.name)
+    resume_text_splitter = CharacterTextSplitter()
+    resume_data = resume_loader.load_and_split(resume_text_splitter)
+    embedding = HuggingFaceEmbedding().load()
+    persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
+    vectorstore = SKLearnVectorStore.from_documents(documents=resume_data, embedding=embedding,
+                                                    persist_path=persist_path, serializer="parquet")
+    retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': len(resume_data)})
+    tf.close()
+    os.unlink(tf.name)
+    return retriever
 
 
-def clear_all():
-    uploaded_file = None
-    st.session_state["job-desc"] = ""
+def initiate_llm(retreiver, option_key):
+    os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
+    cohere_llm = CohereLLMChain().get_llm()
+    prompt_template = option_generators[option_key].get_template()
+    cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
+    cohere_rag_chain = create_retrieval_chain(retreiver, cohere_question_answer_chain)
+    return cohere_rag_chain
 
 
-clear_button = st.button(label="Clear Input", on_click=clear_input)
-get_button = st.button("Get Cover Letter")
-reload_button = st.button(label="Reload", on_click=clear_all)
+def main():
+    st.set_page_config()
+    cover_me_app()
 
-if uploaded_file is not None:
-    prompt_template = ChatPromptTemplate.from_template(generator_prompt)
 
-    with st.spinner("Loading and Indexing the document"):
-        tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
-        text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(tokenizer, chunk_size=200, chunk_overlap=0)
-
-        tf = NamedTemporaryFile(dir='./', suffix='.pdf', delete=False)
-        tf.write(uploaded_file.getbuffer())
-        loader = PDFPlumberLoader(tf.name)
-        data = loader.load_and_split(text_splitter=text_splitter)
-        embeddings = load_embeddings()
-        persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
-        vectorstore = SKLearnVectorStore.from_documents(documents=data, embedding=embeddings, persist_path=persist_path,
-                                                        serializer="parquet")
-        retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': len(data)})
-        compressor = FlashrankRerank(top_n=1, model="ms-marco-MiniLM-L-12-v2")
-        compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever)
-        tf.close()
-        os.unlink(tf.name)
-        st.info("Index created .....")
-
-    with st.spinner("Initiating the LLM"):
-        os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
-        cohere_llm = ChatCohere(model="command-r-plus")
-        cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
-        cohere_rag_chain = create_retrieval_chain(compression_retriever, cohere_question_answer_chain)
-        st.info("LLM initiated ....")
-
-if get_button and job_description is not None:
-    with st.status("Generating the cover letter"):
-        input_json = {"input": job_description}
-        cohere_results = cohere_rag_chain.invoke(input_json)['answer']
-    st.success(cohere_results)
-    st_copy_to_clipboard(cohere_results)
-
-if reload_button:
-    st.rerun()
+if __name__ == "__main__":
+    main()
