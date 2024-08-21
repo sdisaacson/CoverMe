@@ -8,25 +8,28 @@ class Prompt:
 
 class GeneratorPrompt(Prompt):
     generator_prompt = """
-    Create a cover letter in the Format structure given below. Use the given 2 inputs below as variable to add context to the format.
+    Create a cover letter in the Format given below. Use the given 2 inputs below as variable to add context to the format.
     Format structure of cover letter:
-
+    
     Dear Hiring Team,
-
+    
     Instruction to write Body of letter:
-    - Write cover letter body that sounds professional, natural & written by human
-    - body of letter in the range of 150 to 250 words. 
+    
+    - Write a cover letter body that sounds professional, natural & written by human
+    - body of letter in the range of 150 to 250 words.
     - Body should be written based on steps 1 to 3 mentioned next:
-    - Step 1: Extract important key words from input 2 given below
-    - Step 2: Extract details about the company from input 2 given below + internet (vision, key products etc.)
+    - Step 1: Extract important ATS key words from input 2 given below
+    - Step 2: Extract details about the company from input 2 given below + internet
     - Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
-    - Don’t use terms like “as mentioned in the job description”
-
+    - Highlight the relevant experience from input 1 based keywords in step 1
+    - Don’t mention terms like job description
+    - Don’t write more than 2 lines on the company vision
+    
     Best Regards
-
+    
     Input 1 - Resume of applying candidate: {context}
     Input 2 - Job description for the job to apply: {input}
-    Note: The output should only contain the cover letter as given in the format structure. 
+    Note: The output should only contain the cover letter as given in the format structure.
     Note 2: The last line of the cover letter should contain only the candidate's name Example: "John Doe"
     """
 
@@ -39,28 +42,29 @@ class GeneratorPrompt(Prompt):
 
 class LinkedInMessagePrompt(Prompt):
     generator_prompt = """
-        Create a LinkedIn message in the Format structure given below. 
-        Use the given 2 inputs below as variable to add context to the format.
+        Create a linkedin chat message in the Format given below. Use the given 2 inputs below as variable to add context to the format.
+        Format structure of cover letter:
         
-        Format structure of the message:
+        Dear <Name>,
         
-        Dear Hiring Team,
-
-        Instruction to write Body of letter:
-        - Write a message that sounds professional, natural & written by human
-        - body of message in the range of 20 to 40 words. 
+        Instruction to write Body of message:
+        
+        - Write a message body that sounds professional, natural & written by human
+        - body of message in the range of 50 to 150 words.
         - Body should be written based on steps 1 to 3 mentioned next:
-        - Step 1: Extract important key words from input 2 given below
-        - Step 2: Extract details about the company from input 2 given below + internet (vision, key products etc.)
+        - Step 1: Extract important ATS key words from input 2 given below
+        - Step 2: Extract details about the company from input 2 given below + internet
         - Step 3: Use extraction from step 1 & step 2 to combine with input 1 given below as context to write cover letter
-        - Don’t use terms like “as mentioned in the job description”
-
+        - Highlight the relevant experience from input 1 based keywords in step 1
+        - Don’t mention terms like job description
+        - Don’t write more than 1 lines on the company vision
+        
         Best Regards
-
+        
         Input 1 - Resume of applying candidate: {context}
         Input 2 - Job description for the job to apply: {input}
-        Note: The output should only contain the message as given in the format structure. 
-        Note 2: The last line of the message should contain only the candidate's name Example: "John Doe"
+        Note: The output should only contain the linkedin message as given in the format structure.
+        Note 2: The last line of the cover letter should contain only the candidate's name Example: "John Doe"
         """
 
     def __init__(self):
