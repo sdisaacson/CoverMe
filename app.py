@@ -51,7 +51,7 @@ def cover_me_app():
 
     if get_button:
         cover_letter = llm_chain.invoke({"input": job_description})["answer"]
-        st.info("Cover letter generated successfully:")
+        st.info("Content generated successfully:")
         st.success(cover_letter)
         st_copy_to_clipboard(cover_letter)
 
