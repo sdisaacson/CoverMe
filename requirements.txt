@@ -1,12 +1,12 @@
-langchain-community==0.2.3
+langchain-community
 langchain-cohere==0.1.7
 langchain==0.2.3
 langchain-core==0.2.22
 st-copy-to-clipboard
 langchain-text-splitters==0.2.1
-langchain-chroma==0.1.1
-pysqlite3-binary
-pandas 
+#langchain-chroma==0.1.1
+#pysqlite3-binary
+pandas
 pyarrow
 transformers
 pdfplumber
