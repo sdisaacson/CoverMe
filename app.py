@@ -19,6 +19,7 @@ option_generators = {
     "LinkedIn Message": LinkedInMessagePrompt(),
     "Cover Letter": GeneratorPrompt()
 }
+cohere_api_key=os.environ["COHERE_API_KEY"]
 
 
 def cover_me_app():
@@ -26,9 +27,6 @@ def cover_me_app():
     st.markdown(
         "**Do you want to stand out while applying for jobs? We got you covered! Cover Me generates contextual cover "
         "letters based on your resume and the job description in seconds.**")
-    st.markdown(
-        "Note: We're in the early stages of development. Please bear with us and help us improve with your feedback. "
-        "Share your suggestions and feature requests [here](https://forms.gle/UPXJBZxdiZy81XVQ9).")
     st.divider()
 
     uploaded_file = st.file_uploader("Upload your CV/Resume here:", type=["pdf"], key="cv-upload")
@@ -74,7 +72,6 @@ def generate_index(uploaded_file):
 
 
 def initiate_llm(retreiver, option_key):
-    os.environ["COHERE_API_KEY"] = st.secrets["cohere-api-key"]
     cohere_llm = CohereLLMChain().get_llm()
     prompt_template = option_generators[option_key].get_template()
     cohere_question_answer_chain = create_stuff_documents_chain(cohere_llm, prompt_template)
